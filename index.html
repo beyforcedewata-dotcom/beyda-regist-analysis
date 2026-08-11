@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Beyda Tour Org - Multi-Tournament Engine</title>
+    <title>BEYFORCE DEWATA TOURNAMENT OVERVIEW</title>
+    <!-- Favicon / Web Icon -->
+    <link rel="icon" type="image/png" href="BeyDa Logo New HD.png">
     <style>
         :root {
             --bg-color: #0f172a;
@@ -24,10 +26,11 @@
         .container { max-width: 1100px; margin: 0 auto; }
 
         header { text-align: center; margin-bottom: 25px; }
-        header h1 { color: var(--accent); font-size: 2rem; margin-bottom: 5px; }
+        .brand-logo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin-bottom: 12px; border: 3px solid var(--accent); box-shadow: 0 0 15px rgba(56, 189, 248, 0.4); }
+        header h1 { color: var(--accent); font-size: 2rem; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
         header p { color: var(--text-muted); font-size: 0.95rem; }
 
-        .sync-badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; background: #334155; color: var(--text-muted); margin-top: 5px; }
+        .sync-badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; background: #334155; color: var(--text-muted); margin-top: 8px; }
         .sync-badge.online { background: #065f46; color: #34d399; }
 
         .active-tourney-bar { background: #1e293b; border: 1px solid var(--accent); border-radius: 8px; padding: 12px 20px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
@@ -47,9 +50,9 @@
         .btn-export { background: var(--accent); color: #0f172a; border: none; padding: 8px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.85rem; transition: background 0.2s; }
         .btn-export:hover { background: var(--accent-hover); color: var(--text); }
 
-        .combo-box { background: #0f172a; border: 1px solid var(--border); border-left: 4px solid var(--purple); border-radius: 8px; padding: 18px; margin-bottom: 20px; }
-        .combo-box h3 { color: var(--purple); font-size: 1.05rem; margin-bottom: 12px; }
-        .slot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .combo-box { background: #0f172a; border: 1px solid var(--border); border-left: 4px solid var(--purple); border-radius: 8px; padding: 18px; margin-bottom: 20px; position: relative; }
+        .combo-box h3 { color: var(--purple); font-size: 1.05rem; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .slot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
 
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 6px; font-weight: 600; color: var(--text-muted); font-size: 0.85rem; }
@@ -59,6 +62,11 @@
 
         .btn-submit { width: 100%; padding: 12px; background: var(--accent-hover); border: none; color: var(--text); font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 0.95rem; transition: background 0.2s; }
         .btn-submit:hover { background: #0369a1; }
+
+        .btn-secondary { background: var(--border); color: var(--text); border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; }
+        .btn-secondary:hover { background: #475569; }
+
+        .btn-remove-combo { background: var(--danger); color: white; border: none; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; cursor: pointer; }
 
         table { width: 100%; border-collapse: collapse; text-align: left; }
         th { padding: 12px; background: #273549; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; border-bottom: 1px solid var(--border); position: sticky; top: 0; }
@@ -75,12 +83,10 @@
         .part-tag-editable:hover { border-color: var(--accent); }
         .btn-delete-tag { background: transparent; border: none; color: var(--danger); font-weight: bold; cursor: pointer; font-size: 1rem; line-height: 1; padding: 0 2px; }
 
-        /* Status & Badges */
         .status-badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 0.75rem; text-transform: uppercase; }
         .status-ongoing { background: #0284c7; color: #fff; }
         .status-completed { background: #059669; color: #fff; }
 
-        /* Modal Styles */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
         .modal-card { background: var(--card-bg); border-radius: 12px; padding: 25px; max-width: 650px; width: 90%; max-height: 85vh; overflow-y: auto; border: 1px solid var(--accent); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
@@ -94,15 +100,16 @@
 
 <div class="container">
     <header>
-        <h1>Beyda Tour Org</h1>
-        <p>Tournament Engine & Multi-Event Meta Hub</p>
+        <img src="BeyDa Logo New HD.png" alt="Beyforce Dewata Logo" class="brand-logo">
+        <h1>BEYFORCE DEWATA TOURNAMENT OVERVIEW</h1>
+        <p>Bey Loadout Registration & Multi-Event Meta Analytics Engine</p>
         <span id="syncBadge" class="sync-badge">Connecting to Firebase...</span>
     </header>
 
     <!-- Active Tournament Selector Bar -->
     <div class="active-tourney-bar">
         <div>
-            <strong style="color: var(--accent);">Active Tournament:</strong> 
+            <strong style="color: var(--accent);">Active Event:</strong> 
             <span id="activeTourneyNameDisplay">Loading...</span>
         </div>
         <div style="display: flex; gap: 10px; align-items: center;">
@@ -132,7 +139,7 @@
                         <th>Tournament Info</th>
                         <th>Status</th>
                         <th>Entrants</th>
-                        <th>Top 3 Winners & Combos</th>
+                        <th>Top 3 Winners</th>
                         <th>Quick Actions</th>
                     </tr>
                 </thead>
@@ -148,7 +155,7 @@
             <form id="createTourneyForm">
                 <div class="form-group">
                     <label>Tournament Name</label>
-                    <input type="text" id="newTourneyName" placeholder="e.g. Beyda Regional Championship 2026" required>
+                    <input type="text" id="newTourneyName" placeholder="e.g. Beyforce Dewata Championship 2026" required>
                 </div>
                 <div class="form-group">
                     <label>Event Date</label>
@@ -156,24 +163,30 @@
                 </div>
                 <div class="form-group">
                     <label>Tournament Description & Rules</label>
-                    <textarea id="newTourneyDesc" placeholder="e.g. 3-Combo Deck Format, Swiss Rounds to Top 8 Cut." required></textarea>
+                    <textarea id="newTourneyDesc" placeholder="e.g. Dynamic Deck Format (1 to 5 Beys allowed)." required></textarea>
                 </div>
                 <button type="submit" class="btn-submit">Initialize Tournament</button>
             </form>
         </div>
     </div>
 
-    <!-- TAB 3: REGISTRATION -->
+    <!-- TAB 3: DYNAMIC REGISTRATION -->
     <div id="signupTab" class="tab-content">
         <div class="card">
-            <h2 style="color: var(--accent); margin-bottom: 20px; font-size: 1.3rem; text-align: center;">Register 3-Combo Deck</h2>
+            <h2 style="color: var(--accent); margin-bottom: 20px; font-size: 1.3rem; text-align: center;">Register Player Deck</h2>
             <form id="deckForm">
                 <div class="form-group" style="max-width: 400px; margin: 0 auto 25px auto;">
                     <label for="username">Player Tag / Handle</label>
                     <input type="text" id="username" placeholder="e.g. BladerX" required>
                 </div>
+
                 <div id="combosContainer"></div>
-                <button type="submit" class="btn-submit">Submit 3-Combo Deck</button>
+
+                <div style="display: flex; gap: 10px; margin-bottom: 25px;">
+                    <button type="button" class="btn-secondary" onclick="addComboSlot()" style="flex:1;">+ Add Bey Slot</button>
+                </div>
+
+                <button type="submit" class="btn-submit">Submit Registration</button>
             </form>
         </div>
     </div>
@@ -195,6 +208,7 @@
                         <tr>
                             <th>#</th>
                             <th>Player Handle</th>
+                            <th>Bey Count</th>
                             <th>Registered Decks (Shortened Format)</th>
                         </tr>
                     </thead>
@@ -215,7 +229,7 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Standing Finish</th>
+                            <th>Placement</th>
                             <th>Player Handle</th>
                             <th>Submitted Decks</th>
                             <th>Action</th>
@@ -231,15 +245,15 @@
     <div id="metaTab" class="tab-content">
         <div class="analytics-grid">
             <div class="stat-card">
-                <h4>Total Players</h4>
+                <h4>Total Entrants</h4>
                 <div class="value" id="statTotalPlayers">0</div>
             </div>
             <div class="stat-card" style="border-left-color: var(--purple);">
-                <h4>Total Combos</h4>
+                <h4>Total Beys Registered</h4>
                 <div class="value" id="statTotalCombos">0</div>
             </div>
             <div class="stat-card" style="border-left-color: var(--gold);">
-                <h4>Unique Combos</h4>
+                <h4>Unique Combo Builds</h4>
                 <div class="value" id="statUniqueCombos">0</div>
             </div>
         </div>
@@ -329,7 +343,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getDatabase, ref, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    import { getDatabase, ref, push, onValue, remove, update, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyD6xlScW-nwUuoAlFQS7uCvlBcubqDZrdw",
@@ -359,6 +373,7 @@
     let activeTourneyId = "default_tourney";
     let partsDatabase = [];
     let currentStandings = [];
+    let currentComboCount = 0;
 
     window.switchTab = function(tabId, btn) {
         document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
@@ -373,26 +388,47 @@
         });
     }
 
-    function renderDeckBuilder() {
+    function initializeDeckBuilder(defaultCount = 3) {
         const container = document.getElementById('combosContainer');
         container.innerHTML = '';
-        for (let i = 1; i <= 3; i++) {
-            const comboDiv = document.createElement('div');
-            comboDiv.className = 'combo-box';
-            comboDiv.innerHTML = `
-                <h3>Combo #${i} Configuration</h3>
-                <div class="form-group" style="max-width: 300px;">
-                    <label>Select System Type</label>
-                    <select class="config-selector" onchange="updateComboSlots(${i}, this.value)">
-                        ${Object.keys(CONFIGURATIONS).map(config => `<option value="${config}">${config}</option>`).join('')}
-                    </select>
-                </div>
-                <div class="slot-grid" id="slots-container-${i}"></div>
-            `;
-            container.appendChild(comboDiv);
-            updateComboSlots(i, Object.keys(CONFIGURATIONS)[0]);
+        currentComboCount = 0;
+
+        for (let i = 1; i <= defaultCount; i++) {
+            addComboSlot();
         }
     }
+
+    window.addComboSlot = function() {
+        currentComboCount++;
+        const i = currentComboCount;
+        const container = document.getElementById('combosContainer');
+
+        const comboDiv = document.createElement('div');
+        comboDiv.className = 'combo-box';
+        comboDiv.id = `combo-box-${i}`;
+        comboDiv.innerHTML = `
+            <h3>
+                Bey #${i} Configuration
+                ${i > 1 ? `<button type="button" class="btn-remove-combo" onclick="removeComboSlot(${i})">Remove</button>` : ''}
+            </h3>
+            <div class="form-group" style="max-width: 300px;">
+                <label>Select System Type</label>
+                <select class="config-selector" onchange="updateComboSlots(${i}, this.value)">
+                    ${Object.keys(CONFIGURATIONS).map(config => `<option value="${config}">${config}</option>`).join('')}
+                </select>
+            </div>
+            <div class="slot-grid" id="slots-container-${i}"></div>
+        `;
+        container.appendChild(comboDiv);
+        updateComboSlots(i, Object.keys(CONFIGURATIONS)[0]);
+    };
+
+    window.removeComboSlot = function(id) {
+        const target = document.getElementById(`combo-box-${id}`);
+        if (target) {
+            target.remove();
+        }
+    };
 
     window.updateComboSlots = function(comboNum, configType) {
         const slotsContainer = document.getElementById(`slots-container-${comboNum}`);
@@ -400,7 +436,7 @@
         slotsContainer.innerHTML = '';
         const requiredCategories = CONFIGURATIONS[configType];
 
-        requiredCategories.forEach((cat, slotIndex) => {
+        requiredCategories.forEach((cat) => {
             const group = document.createElement('div');
             group.className = 'form-group';
             const label = document.createElement('label');
@@ -435,7 +471,6 @@
         });
     };
 
-    // MULTI-TOURNAMENT ENGINE LOGIC
     document.getElementById('createTourneyForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const name = document.getElementById('newTourneyName').value.trim();
@@ -502,7 +537,6 @@
         document.getElementById('quickMetaModal').style.display = 'none';
     };
 
-    // RENDER TOURNAMENTS OVERVIEW
     function renderTournamentsOverview() {
         const tbody = document.getElementById('tourneysOverviewBody');
         const select = document.getElementById('tourneySelectDropdown');
@@ -519,7 +553,6 @@
             const t = tournamentsDatabase[id];
             select.innerHTML += `<option value="${id}" ${id === activeTourneyId ? 'selected' : ''}>${t.name}</option>`;
 
-            // Listen for top 3 & participant count
             onValue(ref(db, `standings/${id}`), (snapshot) => {
                 const standings = snapshot.val();
                 let entrantCount = 0;
@@ -535,7 +568,7 @@
                     if (winners.length > 0) {
                         top3HTML = winners.map(w => `
                             <div style="margin-bottom:4px; font-size:0.8rem;">
-                                <strong>${w.rank}: ${w.username}</strong>
+                                <strong>${w.rank}: ${w.username}</strong> (${w.combos ? w.combos.length : 0} Beys)
                             </div>
                         `).join('');
                     }
@@ -575,7 +608,6 @@
         });
     }
 
-    // SHORTENER EXPORT FORMATTER
     function shortenPartName(name) {
         if (!name) return "";
         let clean = name.trim();
@@ -611,7 +643,6 @@
         document.body.removeChild(element);
     }
 
-    // Global Parts Management
     function renderPartsLibrary() {
         const display = document.getElementById('partsLibraryDisplay');
         display.innerHTML = '';
@@ -672,16 +703,21 @@
         e.preventDefault();
         const username = document.getElementById('username').value;
         const combos = [];
-        for (let i = 1; i <= 3; i++) {
-            const configType = document.querySelectorAll('.config-selector')[i-1].value;
-            const partSelects = document.querySelectorAll(`.combo-${i}-part`);
+
+        const comboBoxes = document.querySelectorAll('.combo-box');
+        comboBoxes.forEach((box) => {
+            const configType = box.querySelector('.config-selector').value;
+            const partSelects = box.querySelectorAll('select[class*="-part"]');
+            
             const selectedParts = [];
             partSelects.forEach(sel => selectedParts.push(sel.value));
             combos.push({ configType, parts: selectedParts });
-        }
+        });
+
         push(ref(db, `standings/${activeTourneyId}`), { username, combos, rank: "participants", createdAt: Date.now() });
-        alert(`Registered deck for ${username}!`);
+        alert(`Registered deck with ${combos.length} Bey(s) for ${username}!`);
         this.reset();
+        initializeDeckBuilder(3);
     });
 
     window.renderRegistrationPreview = function() {
@@ -689,14 +725,21 @@
         const searchQuery = (document.getElementById('searchPreviewPlayer')?.value || '').toLowerCase().trim();
         previewBody.innerHTML = '';
         const filtered = currentStandings.filter(p => p.username.toLowerCase().includes(searchQuery));
+        
         if (filtered.length === 0) {
-            previewBody.innerHTML = `<tr><td colspan="3" style="text-align:center; color: var(--text-muted);">No matching participants found.</td></tr>`;
+            previewBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color: var(--text-muted);">No matching participants found.</td></tr>`;
             return;
         }
+
         filtered.forEach((player, index) => {
             let shortCombosPreview = player.combos ? player.combos.map((c) => `<strong>[${c.configType}]</strong> ${c.parts.map(shortenPartName).join(' ')}`).join(' | ') : '';
             const prevTr = document.createElement('tr');
-            prevTr.innerHTML = `<td>${index + 1}</td><td><strong>${player.username}</strong></td><td>${shortCombosPreview}</td>`;
+            prevTr.innerHTML = `
+                <td>${index + 1}</td>
+                <td><strong>${player.username}</strong></td>
+                <td><span class="part-tag" style="background:var(--purple); color:#fff;">${player.combos ? player.combos.length : 0} Beys</span></td>
+                <td>${shortCombosPreview}</td>
+            `;
             previewBody.appendChild(prevTr);
         });
     };
@@ -706,14 +749,17 @@
         const searchQuery = (document.getElementById('searchStandingsPlayer')?.value || '').toLowerCase().trim();
         tbody.innerHTML = '';
         const filtered = currentStandings.filter(p => p.username.toLowerCase().includes(searchQuery));
+        
         if (filtered.length === 0) {
             tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color: var(--text-muted);">No matching participants found.</td></tr>`;
             return;
         }
+
         filtered.forEach((player) => {
             let combosHTML = player.combos ? player.combos.map((c, idx) => `
                 <div class="combo-display"><strong>#${idx + 1} [${c.configType}]:</strong> ${c.parts.map(p => `<span class="part-tag">${p}</span>`).join(' ')}</div>
             `).join('') : '';
+
             const currentRank = player.rank || "participants";
             const tr = document.createElement('tr');
             tr.innerHTML = `
@@ -731,7 +777,12 @@
 
     function computeMetaAnalytics() {
         const totalPlayers = currentStandings.length;
-        const totalCombos = totalPlayers * 3;
+        let totalCombos = 0;
+        
+        currentStandings.forEach(p => {
+            if (p.combos) totalCombos += p.combos.length;
+        });
+
         document.getElementById('statTotalPlayers').innerText = totalPlayers;
         document.getElementById('statTotalCombos').innerText = totalCombos;
 
@@ -801,7 +852,7 @@
         partsDatabase = [];
         if (data) Object.keys(data).forEach(key => partsDatabase.push({ key, ...data[key] }));
         renderPartsLibrary();
-        renderDeckBuilder();
+        initializeDeckBuilder(3);
         computeMetaAnalytics();
         document.getElementById('syncBadge').innerText = '● Connected to Firebase';
         document.getElementById('syncBadge').classList.add('online');
@@ -823,7 +874,7 @@
     }
 
     populateCategoryDropdowns();
-    renderDeckBuilder();
+    initializeDeckBuilder(3);
 </script>
 </body>
 </html>
