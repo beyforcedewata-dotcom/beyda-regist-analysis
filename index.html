@@ -33,10 +33,9 @@
         .sync-badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; background: #334155; color: var(--text-muted); margin-top: 8px; }
         .sync-badge.online { background: #065f46; color: #34d399; }
 
-        /* Active Tournament Bar with Admin Button Moved Here */
+        /* Active Tournament Bar & Admin Login Button */
         .active-tourney-bar { background: #1e293b; border: 1px solid var(--accent); border-radius: 8px; padding: 12px 20px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
 
-        /* Admin Lock Button */
         .admin-lock-btn { background: var(--bg-color); border: 1px solid var(--accent); color: var(--accent); padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
         .admin-lock-btn.unlocked { background: #7c3aed; color: #fff; border-color: #a855f7; }
 
@@ -115,12 +114,11 @@
         .admin-forms-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 25px; }
         .parts-admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
 
-        /* Admin Controls Visibility Toggle */
+        /* STRICT ADMIN CONTROLS VISIBILITY TOGGLE */
         .admin-only { display: none !important; }
         body.is-admin .admin-only { display: flex !important; }
         body.is-admin tr.admin-only, body.is-admin div.admin-only, body.is-admin button.admin-only, body.is-admin th.admin-only, body.is-admin td.admin-only { display: table-cell !important; }
-        body.is-admin div.admin-only-block { display: block !important; }
-        body.is-admin button.admin-only-inline { display: inline-block !important; }
+        body.is-admin .admin-only-tab { display: inline-block !important; }
     </style>
 </head>
 <body>
@@ -149,12 +147,12 @@
     <!-- Navigation Tabs (Only Public Tabs Visible by Default) -->
     <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('overviewTab', this)">Tournament Preview</button>
-        <button class="tab-btn admin-only-inline" onclick="switchTab('setupTab', this)">Event Setup</button>
-        <button class="tab-btn admin-only-inline" onclick="switchTab('signupTab', this)">Player Registration</button>
+        <button class="tab-btn admin-only admin-only-tab" onclick="switchTab('setupTab', this)">Event Setup</button>
+        <button class="tab-btn admin-only admin-only-tab" onclick="switchTab('signupTab', this)">Player Registration</button>
         <button class="tab-btn" onclick="switchTab('previewTab', this)">Registered Decks & Export</button>
         <button class="tab-btn" onclick="switchTab('standingsTab', this)">Final Standings</button>
         <button class="tab-btn" onclick="switchTab('metaTab', this)">Meta & Usage</button>
-        <button class="tab-btn admin-only-inline" onclick="switchTab('partsAdminTab', this)">Manage Parts</button>
+        <button class="tab-btn admin-only admin-only-tab" onclick="switchTab('partsAdminTab', this)">Manage Parts</button>
     </div>
 
     <!-- TAB 1: TOURNAMENT OVERVIEW & PREVIEW -->
