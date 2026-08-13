@@ -25,7 +25,7 @@
         body { background-color: var(--bg-color); color: var(--text); padding: 15px; }
         .container { max-width: 1100px; margin: 0 auto; }
 
-        header { text-align: center; margin-bottom: 25px; position: relative; }
+        header { text-align: center; margin-bottom: 25px; }
         .brand-logo { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; margin-bottom: 12px; border: 3px solid var(--accent); box-shadow: 0 0 15px rgba(56, 189, 248, 0.4); }
         header h1 { color: var(--accent); font-size: 1.8rem; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
         header p { color: var(--text-muted); font-size: 0.9rem; }
@@ -33,11 +33,12 @@
         .sync-badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; background: #334155; color: var(--text-muted); margin-top: 8px; }
         .sync-badge.online { background: #065f46; color: #34d399; }
 
-        /* Admin Lock Badge */
-        .admin-lock-btn { position: absolute; top: 0; right: 0; background: var(--card-bg); border: 1px solid var(--accent); color: var(--accent); padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
-        .admin-lock-btn.unlocked { background: #7c3aed; color: #fff; border-color: #a855f7; }
-
+        /* Active Tournament Bar with Admin Button Moved Here */
         .active-tourney-bar { background: #1e293b; border: 1px solid var(--accent); border-radius: 8px; padding: 12px 20px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+
+        /* Admin Lock Button */
+        .admin-lock-btn { background: var(--bg-color); border: 1px solid var(--accent); color: var(--accent); padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
+        .admin-lock-btn.unlocked { background: #7c3aed; color: #fff; border-color: #a855f7; }
 
         .tabs { display: flex; gap: 6px; margin-bottom: 25px; background: var(--card-bg); padding: 6px; border-radius: 8px; border: 1px solid var(--border); flex-wrap: wrap; }
         .tab-btn { flex: 1; padding: 10px; background: transparent; border: none; color: var(--text-muted); font-weight: 600; font-size: 0.85rem; border-radius: 6px; cursor: pointer; transition: all 0.2s ease; min-width: 120px; }
@@ -126,30 +127,30 @@
 
 <div class="container">
     <header>
-        <button id="adminLockBtn" class="admin-lock-btn" onclick="toggleAdminMode()">🔒 Admin Mode</button>
         <img src="BeyDa Logo New HD.png" alt="Beyforce Dewata Logo" class="brand-logo">
         <h1>BEYFORCE DEWATA TOURNAMENT OVERVIEW</h1>
         <p>Bey Loadout Registration & Multi-Event Meta Analytics Engine</p>
         <span id="syncBadge" class="sync-badge">Connecting to Firebase...</span>
     </header>
 
-    <!-- Active Tournament Selector Bar -->
+    <!-- Active Tournament Selector Bar & Admin Login Button -->
     <div class="active-tourney-bar">
         <div>
             <strong style="color: var(--accent);">Active Event:</strong> 
             <span id="activeTourneyNameDisplay">Loading...</span>
         </div>
-        <div style="display: flex; gap: 10px; align-items: center;">
+        <div style="display: flex; gap: 12px; align-items: center;">
             <label style="margin: 0; font-size: 0.85rem;">Switch Event:</label>
             <select id="tourneySelectDropdown" onchange="switchActiveTournament(this.value)" style="width: auto; padding: 6px 10px;"></select>
+            <button id="adminLockBtn" class="admin-lock-btn" onclick="toggleAdminMode()">🔒 Admin Mode</button>
         </div>
     </div>
 
-    <!-- Navigation Tabs -->
+    <!-- Navigation Tabs (Only Public Tabs Visible by Default) -->
     <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('overviewTab', this)">Tournament Preview</button>
         <button class="tab-btn admin-only-inline" onclick="switchTab('setupTab', this)">Event Setup</button>
-        <button class="tab-btn" onclick="switchTab('signupTab', this)">Player Registration</button>
+        <button class="tab-btn admin-only-inline" onclick="switchTab('signupTab', this)">Player Registration</button>
         <button class="tab-btn" onclick="switchTab('previewTab', this)">Registered Decks & Export</button>
         <button class="tab-btn" onclick="switchTab('standingsTab', this)">Final Standings</button>
         <button class="tab-btn" onclick="switchTab('metaTab', this)">Meta & Usage</button>
@@ -199,7 +200,7 @@
         </div>
     </div>
 
-    <!-- TAB 3: DYNAMIC REGISTRATION WITH WAVES & PERSISTENCE -->
+    <!-- TAB 3: DYNAMIC REGISTRATION WITH WAVES & PERSISTENCE (ADMIN ONLY) -->
     <div id="signupTab" class="tab-content">
         <div class="card">
             <h2 style="color: var(--accent); margin-bottom: 20px; font-size: 1.3rem; text-align: center;">Register Player Deck</h2>
