@@ -46,6 +46,12 @@
 
         .batch-bar { background: #0f172a; border: 1px solid var(--purple); border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
 
+        /* Caution Warning Banners */
+        .caution-banner { border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; font-weight: 600; font-size: 0.88rem; display: flex; align-items: center; gap: 10px; transition: all 0.3s ease; }
+        .caution-w1 { background: rgba(2, 132, 199, 0.15); border: 1px solid var(--accent); color: var(--accent); }
+        .caution-w2 { background: rgba(5, 150, 105, 0.15); border: 1px solid var(--success); color: var(--success); }
+        .caution-reborn { background: rgba(124, 58, 237, 0.15); border: 1px solid var(--purple); color: #c084fc; }
+
         .search-player-input { padding: 10px 14px; border-radius: 6px; border: 1px solid var(--accent); background: var(--bg-color); color: var(--text); font-size: 0.95rem; min-width: 220px; flex: 1; }
         
         .btn-export-main { background: var(--purple); color: #fff; border: none; padding: 10px 18px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.9rem; transition: background 0.2s; }
@@ -176,10 +182,16 @@
         </div>
     </div>
 
-    <!-- TAB 3: DYNAMIC REGISTRATION WITH WAVES -->
+    <!-- TAB 3: DYNAMIC REGISTRATION WITH WAVES & PERSISTENCE -->
     <div id="signupTab" class="tab-content">
         <div class="card">
             <h2 style="color: var(--accent); margin-bottom: 20px; font-size: 1.3rem; text-align: center;">Register Player Deck</h2>
+            
+            <!-- Dynamic Caution Banner Box -->
+            <div id="cautionBannerBox" class="caution-banner caution-w1">
+                ⚠️ <span id="cautionBannerText">ACTIVE REGISTRATION MODE: You are currently registering entrants for WAVE 1. Double-check bracket before submitting!</span>
+            </div>
+
             <form id="deckForm">
                 <div class="form-group" style="max-width: 400px; margin: 0 auto 15px auto;">
                     <label for="username">Player Tag / Handle</label>
@@ -188,13 +200,13 @@
 
                 <div class="form-group" style="max-width: 400px; margin: 0 auto 25px auto;">
                     <label>Select Tournament Wave Entry</label>
-                    <select id="waveSelector" onchange="toggleRebornOption(this.value)" required>
+                    <select id="waveSelector" onchange="updateWaveState(this.value)" required>
                         <option value="w1">Wave 1 Entry</option>
                         <option value="w2">Wave 2 Entry</option>
                     </select>
 
                     <div id="rebornOptionContainer" class="checkbox-container" style="display: none;">
-                        <input type="checkbox" id="isRebornCheckbox">
+                        <input type="checkbox" id="isRebornCheckbox" onchange="updateWaveState('w2')">
                         <label for="isRebornCheckbox" style="margin: 0; color: var(--purple); cursor: pointer;">Mark as <strong>Reborn Player</strong> (Wave 1 Redemption)</label>
                     </div>
                 </div>
@@ -210,10 +222,22 @@
         </div>
     </div>
 
-    <!-- TAB 4: REGISTERED DECKS (PREVIEW & EXPORT) -->
+    <!-- TAB 4: REGISTERED DECKS (PREVIEW, EXPORT & BULK MIGRATION) -->
     <div id="previewTab" class="tab-content">
         <div class="card">
             <h2 style="color: var(--purple); margin-bottom: 15px; font-size: 1.2rem;">Registered Participants Deck Preview</h2>
+            
+            <!-- Batch Wave Migration Actions -->
+            <div class="batch-bar">
+                <strong style="color: var(--accent); font-size: 0.85rem;">Move Selected Players to Wave:</strong>
+                <select id="batchWaveSelector" style="width: auto; padding: 6px 10px;">
+                    <option value="w1">Move to Wave 1</option>
+                    <option value="w2_fresh">Move to Wave 2 (Fresh Entry)</option>
+                    <option value="w2_reborn">Move to Wave 2 (Reborn Redemption)</option>
+                </select>
+                <button onclick="applyBatchWaveMigration()" style="background: var(--accent); color: #000; border: none; padding: 7px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.8rem;">Apply Wave Move</button>
+            </div>
+
             <div class="toolbar">
                 <input type="text" id="searchPreviewPlayer" class="search-player-input" placeholder="🔍 Search player handle..." oninput="renderRegistrationPreview()">
                 <button class="btn-export-main" onclick="openExportModal()">📤 Export Participants</button>
@@ -222,6 +246,7 @@
                 <table>
                     <thead>
                         <tr>
+                            <th style="width: 40px;"><input type="checkbox" id="selectAllPreviewCheckbox" onchange="toggleSelectAllPreview(this.checked)"></th>
                             <th>#</th>
                             <th>Player Handle</th>
                             <th>Wave Entry</th>
@@ -240,7 +265,7 @@
         <div class="card">
             <h2 style="color: var(--accent); margin-bottom: 15px; font-size: 1.3rem;">Leaderboard & Placement Manager</h2>
             
-            <!-- Batch Assignment Controls -->
+            <!-- Batch Placement Controls -->
             <div class="batch-bar">
                 <strong style="color: var(--purple); font-size: 0.85rem;">Batch Placement Actions:</strong>
                 <select id="batchRankSelector" style="width: auto; padding: 6px 10px;">
@@ -451,13 +476,27 @@
         });
     }
 
-    window.toggleRebornOption = function(waveVal) {
+    // UPDATE DYNAMIC CAUTION BANNER
+    window.updateWaveState = function(waveVal) {
         const rebornContainer = document.getElementById('rebornOptionContainer');
+        const bannerBox = document.getElementById('cautionBannerBox');
+        const bannerText = document.getElementById('cautionBannerText');
+        const isRebornChecked = document.getElementById('isRebornCheckbox').checked;
+
         if (waveVal === 'w2') {
             rebornContainer.style.display = 'flex';
+            if (isRebornChecked) {
+                bannerBox.className = 'caution-banner caution-reborn';
+                bannerText.innerHTML = 'ACTIVE REGISTRATION MODE: You are currently registering entrants for <strong>WAVE 2 (REBORN REDEMPTION)</strong>. Double-check player bracket before submitting!';
+            } else {
+                bannerBox.className = 'caution-banner caution-w2';
+                bannerText.innerHTML = 'ACTIVE REGISTRATION MODE: You are currently registering entrants for <strong>WAVE 2 (FRESH ENTRY)</strong>. Double-check player bracket before submitting!';
+            }
         } else {
             rebornContainer.style.display = 'none';
             document.getElementById('isRebornCheckbox').checked = false;
+            bannerBox.className = 'caution-banner caution-w1';
+            bannerText.innerHTML = 'ACTIVE REGISTRATION MODE: You are currently registering entrants for <strong>WAVE 1</strong>. Double-check player bracket before submitting!';
         }
     };
 
@@ -773,6 +812,49 @@
         update(ref(db, `standings/${activeTourneyId}/${key}`), { rank: select.value });
     };
 
+    // BATCH WAVE RE-ASSIGNMENT LOGIC
+    window.toggleSelectAllPreview = function(isChecked) {
+        document.querySelectorAll('.preview-check').forEach(cb => cb.checked = isChecked);
+    };
+
+    window.applyBatchWaveMigration = function() {
+        const checkedBoxes = document.querySelectorAll('.preview-check:checked');
+        if (checkedBoxes.length === 0) return alert("Please select players to move waves.");
+
+        const targetWaveAction = document.getElementById('batchWaveSelector').value;
+        const updates = {};
+
+        checkedBoxes.forEach(cb => {
+            const key = cb.getAttribute('data-key');
+            const player = currentStandings.find(p => p.key === key);
+            
+            if (player) {
+                let cleanName = player.username.replace(/\s*\(Reborn\)/gi, '').trim();
+
+                if (targetWaveAction === 'w1') {
+                    updates[`standings/${activeTourneyId}/${key}/wave`] = 'w1';
+                    updates[`standings/${activeTourneyId}/${key}/isReborn`] = false;
+                    updates[`standings/${activeTourneyId}/${key}/username`] = cleanName;
+                } else if (targetWaveAction === 'w2_fresh') {
+                    updates[`standings/${activeTourneyId}/${key}/wave`] = 'w2';
+                    updates[`standings/${activeTourneyId}/${key}/isReborn`] = false;
+                    updates[`standings/${activeTourneyId}/${key}/username`] = cleanName;
+                } else if (targetWaveAction === 'w2_reborn') {
+                    updates[`standings/${activeTourneyId}/${key}/wave`] = 'w2';
+                    updates[`standings/${activeTourneyId}/${key}/isReborn`] = true;
+                    updates[`standings/${activeTourneyId}/${key}/username`] = `${cleanName} (Reborn)`;
+                }
+            }
+        });
+
+        update(ref(db), updates)
+            .then(() => {
+                alert(`Successfully moved ${checkedBoxes.length} player(s) to selected wave!`);
+                document.getElementById('selectAllPreviewCheckbox').checked = false;
+            })
+            .catch(err => alert("Wave update failed: " + err.message));
+    };
+
     // BATCH PLACEMENT ASSIGNMENT LOGIC
     window.toggleSelectAllStandings = function(isChecked) {
         document.querySelectorAll('.standing-check').forEach(cb => cb.checked = isChecked);
@@ -839,14 +921,15 @@
         }
     });
 
+    // SUBMIT FORM WITH PERSISTENT WAVE SELECTION
     document.getElementById('deckForm').addEventListener('submit', function(e) {
         e.preventDefault();
         let rawUsername = document.getElementById('username').value.trim();
-        const wave = document.getElementById('waveSelector').value;
-        const isReborn = document.getElementById('isRebornCheckbox').checked;
+        const currentWave = document.getElementById('waveSelector').value;
+        const currentIsReborn = document.getElementById('isRebornCheckbox').checked;
 
         let displayUsername = rawUsername;
-        if (isReborn && !displayUsername.toLowerCase().includes('reborn')) {
+        if (currentIsReborn && !displayUsername.toLowerCase().includes('reborn')) {
             displayUsername = `${rawUsername} (Reborn)`;
         }
 
@@ -863,16 +946,17 @@
 
         push(ref(db, `standings/${activeTourneyId}`), { 
             username: displayUsername, 
-            wave, 
-            isReborn, 
+            wave: currentWave, 
+            isReborn: currentIsReborn, 
             combos, 
             rank: "Unassigned", 
             createdAt: Date.now() 
         });
 
         alert(`Registered deck with ${combos.length} Bey(s) for ${displayUsername}!`);
-        this.reset();
-        toggleRebornOption('w1');
+        
+        // ONLY RESET USERNAME FIELD TO KEEP WAVE PERSISTENT
+        document.getElementById('username').value = '';
         initializeDeckBuilder(3);
     });
 
@@ -883,7 +967,7 @@
         const filtered = currentStandings.filter(p => p.username.toLowerCase().includes(searchQuery));
         
         if (filtered.length === 0) {
-            previewBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--text-muted);">No matching participants found.</td></tr>`;
+            previewBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">No matching participants found.</td></tr>`;
             return;
         }
 
@@ -899,6 +983,7 @@
 
             const prevTr = document.createElement('tr');
             prevTr.innerHTML = `
+                <td><input type="checkbox" class="preview-check" data-key="${player.key}"></td>
                 <td>${index + 1}</td>
                 <td><strong>${player.username}</strong></td>
                 <td>${waveBadge}</td>
@@ -1041,6 +1126,7 @@
 
     populateCategoryDropdowns();
     initializeDeckBuilder(3);
+    updateWaveState('w1');
 </script>
 </body>
 </html>
