@@ -256,7 +256,8 @@
 
             <div class="toolbar">
                 <input type="text" id="searchPreviewPlayer" class="search-player-input" placeholder="🔍 Search player handle..." oninput="renderRegistrationPreview()">
-                <button class="btn-export-main" onclick="openExportModal()">📤 Export Participants</button>
+                <!-- Export button now admin-only -->
+                <button class="btn-export-main admin-only admin-only-inline" onclick="openExportModal()">📤 Export Participants</button>
             </div>
 
             <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
@@ -268,7 +269,7 @@
                             <th>Player Handle</th>
                             <th>Wave Entry</th>
                             <th>Bey Count</th>
-                            <th>Registered Decks (Shortened Format)</th>
+                            <th>Registered Decks</th>
                         </tr>
                     </thead>
                     <tbody id="previewRegistrationBody"></tbody>
@@ -1031,7 +1032,10 @@
         }
 
         filtered.forEach((player, index) => {
-            let shortCombosPreview = player.combos ? player.combos.map((c) => `<strong>[${c.configType}]</strong> ${c.parts.map(shortenPartName).join(' ')}`).join(' | ') : '';
+            // Displays full part names separated by slashes instead of shortened part codes
+            let fullCombosPreview = player.combos ? player.combos.map((c, idx) => `
+                <div class="combo-display"><strong>#${idx + 1} [${c.configType}]:</strong> ${c.parts.join(' / ')}</div>
+            `).join('') : '';
             
             let waveBadge = `<span class="part-tag" style="background:#0284c7; color:#fff;">Wave 1</span>`;
             if (player.wave === 'w2') {
@@ -1049,7 +1053,7 @@
                 <td><strong>${player.username}</strong></td>
                 <td>${waveBadge}</td>
                 <td><span class="part-tag" style="background:var(--purple); color:#fff;">${player.combos ? player.combos.length : 0} Beys</span></td>
-                <td>${shortCombosPreview}</td>
+                <td>${fullCombosPreview}</td>
             `;
             previewBody.appendChild(prevTr);
         });
