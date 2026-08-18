@@ -116,9 +116,11 @@
         .admin-forms-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 25px; }
         .parts-admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
 
+        /* STRICT ADMIN CONTROLS VISIBILITY TOGGLE */
         .admin-only { display: none !important; }
         body.is-admin .admin-only { display: flex !important; }
         body.is-admin tr.admin-only, body.is-admin div.admin-only, body.is-admin button.admin-only, body.is-admin th.admin-only, body.is-admin td.admin-only { display: table-cell !important; }
+        body.is-admin button.admin-only-btn { display: block !important; margin-bottom: 6px; }
         body.is-admin .admin-only-tab { display: inline-block !important; }
     </style>
 </head>
@@ -489,7 +491,6 @@
         "Wave 1 Participant", "Wave 2 Participant", "Reborn Participant", "Unassigned"
     ];
     
-    // UPDATED CONFIGURATIONS (CX Expand updated to include Assist Blade)
     const CONFIGURATIONS = {
         "BX": ["BX Blade", "Ratchet", "Bit"],
         "BX-Expand": ["BX Blade", "Ratchet", "Bit"],
@@ -536,6 +537,7 @@
             window.switchTab('overviewTab', document.querySelectorAll('.tab-btn')[0]);
         }
         renderPartsLibrary();
+        renderTournamentsOverview();
         renderRegistrationPreview();
         renderStandingsTable();
     };
@@ -553,7 +555,6 @@
         });
     }
 
-    // GENERATE ALPHABETICALLY SORTED DATALISTS FOR AUTOCOMPLETE
     function updateGlobalDatalists() {
         const container = document.getElementById('globalDatalistsContainer');
         container.innerHTML = '';
@@ -562,7 +563,6 @@
             const dl = document.createElement('datalist');
             dl.id = `datalist-${cat.replace(/\s+/g, '-')}`;
             
-            // Alphabetical Sort
             const sortedParts = partsDatabase
                 .filter(p => p.category === cat)
                 .map(p => p.name)
@@ -641,7 +641,6 @@
         if (target) target.remove();
     };
 
-    // RENDER SLOTS WITH BLADE GROUPING & AUTOCOMPLETE INPUTS
     window.updateComboSlots = function(comboNum, configType, prefix = '') {
         const slotsContainer = document.getElementById(`${prefix}slots-container-${comboNum}`);
         if (!slotsContainer) return;
@@ -660,7 +659,6 @@
             }
         });
 
-        // 1. Render Composite Blade Section for CX
         if (isCX && bladeParts.length > 0) {
             const bladeSec = document.createElement('div');
             bladeSec.className = 'blade-composite-section';
@@ -673,7 +671,6 @@
             });
         }
 
-        // 2. Render Normal / Non-Blade Slots
         const mainGrid = document.createElement('div');
         mainGrid.className = 'slot-grid';
         nonBladeParts.forEach(cat => {
@@ -730,7 +727,11 @@
     window.toggleTourneyStatus = function(id, currentStatus) {
         if (!isAdmin) return alert("Admin access required.");
         const newStatus = currentStatus === "ongoing" ? "completed" : "ongoing";
-        update(ref(db, `tournaments/${id}`), { status: newStatus });
+        update(ref(db, `tournaments/${id}`), { status: newStatus })
+            .then(() => {
+                alert(`Tournament marked as ${newStatus.toUpperCase()}!`);
+            })
+            .catch(err => alert("Error updating status: " + err.message));
     };
 
     window.openQuickMetaModal = function(tourneyId) {
@@ -816,12 +817,6 @@
                 }
 
                 const existingRow = document.getElementById(`tourney-row-${id}`);
-                const adminActions = isAdmin ? `
-                    <button onclick="toggleTourneyStatus('${id}', '${t.status}')" style="background:var(--accent); border:none; padding:4px 8px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:0.75rem; margin-bottom:4px;">
-                        ${t.status === 'ongoing' ? 'Mark Completed' : 'Reopen Event'}
-                    </button><br>
-                ` : '';
-
                 const rowHTML = `
                     <td>
                         <strong>${t.name}</strong><br>
@@ -834,8 +829,10 @@
                     <td><strong>${entrantCount}</strong> Entrants</td>
                     <td>${top3HTML}</td>
                     <td>
-                        ${adminActions}
-                        <button onclick="openQuickMetaModal('${id}')" style="background:var(--purple); color:#fff; border:none; padding:4px 8px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:0.75rem;">
+                        <button class="admin-only admin-only-btn" onclick="toggleTourneyStatus('${id}', '${t.status}')" style="background:var(--accent); color:#000; border:none; padding:5px 10px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:0.75rem; width:100%;">
+                            ${t.status === 'ongoing' ? 'Mark Completed' : 'Reopen Event'}
+                        </button>
+                        <button onclick="openQuickMetaModal('${id}')" style="background:var(--purple); color:#fff; border:none; padding:5px 10px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:0.75rem; width:100%;">
                             ⚡ Quick Meta
                         </button>
                     </td>
@@ -933,7 +930,6 @@
         if (confirm("Delete this part from library?")) remove(ref(db, `partsDatabase/${key}`)); 
     };
 
-    // EDIT PART NAME & CATEGORY IN CASE OF MISTYPE
     window.editPartName = function(key) {
         if (!isAdmin) return alert("Please unlock Admin Mode to edit parts.");
         const part = partsDatabase.find(p => p.key === key);
@@ -1043,7 +1039,6 @@
         if (confirm("Remove this participant entry?")) remove(ref(db, `standings/${activeTourneyId}/${key}`));
     };
 
-    // EDIT PARTICIPANT MODAL LOGIC
     window.openEditParticipantModal = function(key) {
         if (!isAdmin) return alert("Admin access required to edit participants.");
         const player = currentStandings.find(p => p.key === key);
@@ -1101,7 +1096,6 @@
         container.appendChild(comboDiv);
         updateComboSlots(i, initialConfig, 'edit-');
 
-        // Prefill existing values if editing
         if (existingCombo && existingCombo.parts) {
             const inputs = comboDiv.querySelectorAll('input[class*="edit-combo-"]');
             inputs.forEach((input, idx) => {
@@ -1234,12 +1228,12 @@
                     `<span class="part-tag" style="background:#059669; color:#fff;">Wave 2</span>`;
             }
 
-            const checkboxTD = isAdmin ? `<td class="admin-only"><input type="checkbox" class="preview-check" data-key="${player.key}"></td>` : '';
-            const actionTD = isAdmin ? `
+            const checkboxTD = `<td class="admin-only"><input type="checkbox" class="preview-check" data-key="${player.key}"></td>`;
+            const actionTD = `
                 <td class="admin-only">
                     <button onclick="openEditParticipantModal('${player.key}')" style="background:var(--accent); color:#000; border:none; padding:4px 8px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:0.75rem;">Edit Deck</button>
                 </td>
-            ` : '';
+            `;
 
             const prevTr = document.createElement('tr');
             prevTr.innerHTML = `
@@ -1273,19 +1267,19 @@
 
             const currentRank = player.rank || "Unassigned";
             
-            const checkboxTD = isAdmin ? `<td class="admin-only"><input type="checkbox" class="standing-check" data-key="${player.key}"></td>` : '';
+            const checkboxTD = `<td class="admin-only"><input type="checkbox" class="standing-check" data-key="${player.key}"></td>`;
             
             const placementControl = isAdmin ? 
                 `<select id="rank-select-${player.key}">${STANDING_OPTIONS.map(opt => `<option value="${opt}" ${opt === currentRank ? 'selected' : ''}>${opt}</option>`).join('')}</select>` :
                 `<span class="status-badge status-ongoing">${currentRank}</span>`;
 
-            const actionControl = isAdmin ? `
+            const actionControl = `
                 <td class="admin-only">
                     <button onclick="saveStandingRank('${player.key}')" style="background:var(--accent); color:#000; border:none; padding:5px 10px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:0.75rem;">Save</button>
                     <button onclick="openEditParticipantModal('${player.key}')" style="background:var(--purple); color:#fff; border:none; padding:5px 8px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:0.75rem; margin-left:4px;">Edit</button>
                     <button onclick="deleteRegistration('${player.key}')" style="background:none; border:none; color:var(--danger); cursor:pointer; font-size:0.75rem; text-decoration:underline; margin-left:6px;">Delete</button>
                 </td>
-            ` : '';
+            `;
 
             const tr = document.createElement('tr');
             tr.innerHTML = `
@@ -1299,7 +1293,6 @@
         });
     };
 
-    // META ANALYTICS GROUPED BY CATEGORY
     function computeMetaAnalytics() {
         const totalPlayers = currentStandings.length;
         let totalCombos = 0;
@@ -1344,7 +1337,6 @@
             }
         });
 
-        // 4. Render Most Used Parts Grouped per Category
         ALL_CATEGORIES.forEach(cat => {
             const partsInCat = Object.values(partStats).filter(p => p.category === cat);
             if (partsInCat.length === 0) return;
@@ -1397,7 +1389,6 @@
         });
     }
 
-    // FIREBASE REAL-TIME LISTENERS
     onValue(ref(db, 'tournaments'), (snapshot) => {
         const data = snapshot.val();
         tournamentsDatabase = data || {};
